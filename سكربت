@@ -1,0 +1,39 @@
+* يتطلبكمد السكرين تعديات بيتناسب مع
+اللعبة المحددة التي تستخدمها .
+import time import keyboard
+import
+mouse
+وظيفة الايم بوت (مثال )
+#
+def aimbot_function ():
+print ("Aimbot activated!")
+# منا ستكون لوجيك الايم بوت الحقيقي، مثل قراءة ذاكرة اللعبة وتحديد الأهداف
+# وتحريك الماوس تلقائياً .
+mouse .move (X_coordinate, : مثال #
+y_coordinate)
+# وظيفة الرادار (مثال )
+def radar_function () :
+print ("Radar activated!")
+# هنا ستكون لوجيك الرادار الحقيقي،
+مثل قراءة ذاكرة اللعبة وتحديد مواقع
+الأعداء
+# وعرضها على الشاشة أو في
+واجهة مستخدم .
+# تفعيل السكربت عند الضغط على مفتاح معين
+(1 .لتفعيل الايم ربوت ٩" اافغط " PrEnt
+print ("اضغط
+(" .لتفعيل الرادار
+print ("اضغط
+'esc'
+(. للخرو )
+while True:
+try:
+if keyboard. is_pressed ('9'):
+aimbot_function()
+if keyboard is_pressed( 'e'):
+radar_function ( )
+if keyboard. is pressed'ese?
+'. الخروج من السكربت" ) print
+break except:
+pass
+time.sleep (0.1 )
