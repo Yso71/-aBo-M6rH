@@ -1,0 +1,75 @@
+-- الحماية: يمنع تشغيل السكربت إلا من خلال LocalPlayer داخل اللعبة
+if not game:GetService("Players").LocalPlayer then
+    return warn("هذا السكربت لا يعمل إلا داخل اللعبة كلاعب محلي.")
+end
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+-- إعدادات
+local AimbotEnabled = true
+local ESPEnabled = true
+local AimRadius = 150 -- مدى التصويب
+
+-- حماية إضافية: عدم التشغيل خارج البيئة الصحيحة
+pcall(function()
+
+    -- دالة للتحقق من أن اللاعب عدو وحيّ
+    local function isEnemy(player)
+        if player == LocalPlayer then return false end
+        if not player.Character or not player.Character:FindFirstChild("Humanoid") then return false end
+        if player.Team == LocalPlayer.Team then return false end
+        if player.Character.Humanoid.Health <= 0 then return false end
+        return true
+    end
+
+    -- ESP (اسم اللاعب فوق رأسه)
+    if ESPEnabled then
+        for _, player in pairs(Players:GetPlayers()) do
+            if isEnemy(player) then
+                player.CharacterAdded:Connect(function(character)
+                    local head = character:WaitForChild("Head")
+                    local billboard = Instance.new("BillboardGui", head)
+                    billboard.Size = UDim2.new(6, 0, 2, 0)
+                    billboard.StudsOffset = Vector3.new(0, 2, 0)
+                    billboard.AlwaysOnTop = true
+
+                    local label = Instance.new("TextLabel", billboard)
+                    label.Size = UDim2.new(1, 0, 1, 0)
+                    label.BackgroundTransparency = 1
+                    label.TextColor3 = Color3.new(1, 0, 0)
+                    label.TextScaled = true
+                    label.Text = player.Name
+                end)
+            end
+        end
+    end
+
+    -- Aimbot (يتتبع أقرب عدو حي فقط)
+    RunService.RenderStepped:Connect(function()
+        if not AimbotEnabled then return end
+        local closestEnemy = nil
+        local shortestDistance = AimRadius
+
+        for _, player in pairs(Players:GetPlayers()) do
+            if isEnemy(player) and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local pos, onScreen = Camera:WorldToViewportPoint(player.Character.HumanoidRootPart.Position)
+                if onScreen then
+                    local distance = (Vector2.new(pos.X, pos.Y) - Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)).Magnitude
+                    if distance < shortestDistance then
+                        shortestDistance = distance
+                        closestEnemy = player
+                    end
+                end
+            end
+        end
+
+        if closestEnemy and closestEnemy.Character and closestEnemy.Character:FindFirstChild("HumanoidRootPart") then
+            local targetPos = closestEnemy.Character.HumanoidRootPart.Position
+            Camera.CFrame = CFrame.new(Camera.CFrame.Position, targetPos)
+        end
+    end)
+
+end)
